@@ -4,11 +4,6 @@ using Catalog.Application.Resposes;
 using Catalog.Core.Entities;
 using Catalog.Core.Repository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Catalog.Application.Handlers
 {

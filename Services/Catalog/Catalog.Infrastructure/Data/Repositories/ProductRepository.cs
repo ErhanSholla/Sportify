@@ -1,5 +1,6 @@
 ﻿using Catalog.Core.Entities;
 using Catalog.Core.Repository;
+using Catalog.Core.Specification;
 using MongoDB.Driver;
 
 namespace Catalog.Infrastructure.Data.Repositories
@@ -31,9 +32,59 @@ namespace Catalog.Infrastructure.Data.Repositories
             return await _catalogContext.Brands.Find(b => true).ToListAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetAllProducts()
+        public async Task<Pagination<Product>> GetAllProducts(CatalogSpecifcationParam catalogSpecifcation)
         {
-            return await _catalogContext.Products.Find(p => true).ToListAsync();
+            var builder = Builders<Product>.Filter;
+            var filter = builder.Empty;
+
+            if (!string.IsNullOrEmpty(catalogSpecifcation.Search))
+            {
+                // this return a new combined filter. it doesnt mutate the original filter
+                filter = filter & builder.Where(p => p.Name.ToLower().Contains(catalogSpecifcation.Search.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(catalogSpecifcation.BrandId))
+            {
+                var brandFilter = builder.Eq(p => p.Brand.Id, catalogSpecifcation.BrandId);
+                // Give Me a product where BRandId=X, in addition to any previous conditions
+                filter &= brandFilter; // equivalent to filter = filter & brandFilter
+
+            }
+            if (!string.IsNullOrEmpty(catalogSpecifcation.TypeId))
+            {
+                var typeFilter = builder.Eq(p => p.Type.Id, catalogSpecifcation.TypeId);
+
+                filter &= typeFilter;
+            }
+            var totalItems = await _catalogContext.Products.CountDocumentsAsync(filter);
+            var data = await DataFilter(catalogSpecifcation, filter);
+
+            return new Pagination<Product>(catalogSpecifcation.PageIndex, catalogSpecifcation.PageSize, (int)totalItems, data);
+        }
+
+        private async Task<IReadOnlyList<Product>> DataFilter(CatalogSpecifcationParam catalogSpecifcation, FilterDefinition<Product> filter)
+        {
+            var sortDefinition = Builders<Product>.Sort.Ascending("Name");
+            if (!string.IsNullOrEmpty(catalogSpecifcation.Sort))
+            {
+                switch (catalogSpecifcation.Sort)
+                {
+                    case "priceAsc":
+                        sortDefinition = Builders<Product>.Sort.Ascending(p => p.Price);
+                        break;
+                    case "priceDesc":
+                        sortDefinition = Builders<Product>.Sort.Descending(p => p.Price);
+                        break;
+                    default:
+                        sortDefinition = Builders<Product>.Sort.Ascending(p => p.Name);
+                        break;
+                }
+            }
+            return await _catalogContext.Products
+                .Find(filter)
+                .Sort(sortDefinition)
+                .Skip(catalogSpecifcation.PageSize * (catalogSpecifcation.PageIndex - 1))
+                .Limit(catalogSpecifcation.PageSize)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<ProductType>> GetAllTypes()

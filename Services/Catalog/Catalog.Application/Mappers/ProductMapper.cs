@@ -10,6 +10,7 @@ public class ProductMapper
             cfg.ShouldMapProperty = p => p.GetMethod.IsPublic || p.GetMethod.IsAssembly;
             cfg.AddProfile<ProductMappingProfile>();
         });
+
         var mapper = config.CreateMapper();
         return mapper;
     });
