@@ -1,7 +1,6 @@
 ﻿using Catalog.Application.Resposes;
 using Catalog.Core.Entities;
 using MediatR;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Catalog.Application.Commands
 {
