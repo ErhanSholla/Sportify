@@ -60,26 +60,6 @@ namespace Catalog.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        [Route("GetAllBrands")]
-        [ProducesResponseType(typeof(IEnumerable<BrandResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<BrandResponse>>> GetAllBrands()
-        {
-            var query = new GetAllBrandsQuery();
-            var result = _mediator.Send(query);
-            return Ok(result);
-        }
-
-        [HttpGet]
-        [Route("GetAllTypes")]
-        [ProducesResponseType(typeof(IEnumerable<TypeResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<TypeResponse>>> GetAllTypes()
-        {
-            var query = new GetAllTypesQuery();
-            var result = _mediator.Send(query);
-            return Ok(result);
-        }
-
         [HttpPost]
         [Route("CreateProduct")]
         [ProducesResponseType(typeof(ProductResponse), (int)HttpStatusCode.OK)]

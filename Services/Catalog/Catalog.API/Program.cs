@@ -39,8 +39,8 @@ namespace Catalog.API
             // Register Application Servies
             builder.Services.AddScoped<ICatalogContext, CatalogContext>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped<ITypesRepo, ProductRepository>();
-            builder.Services.AddScoped<IBrandRepo, ProductRepository>();
+            builder.Services.AddScoped<ITypesRepo, TypRepository>();
+            builder.Services.AddScoped<IBrandRepo, BrandRepository>();
 
             var app = builder.Build();
 
