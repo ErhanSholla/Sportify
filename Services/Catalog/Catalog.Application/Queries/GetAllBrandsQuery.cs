@@ -1,5 +1,4 @@
 ﻿using Catalog.Application.Resposes;
-using Catalog.Core.Specification;
 using MediatR;
 
 namespace Catalog.Application.Queries

@@ -5,7 +5,7 @@ using MongoDB.Driver;
 
 namespace Catalog.Infrastructure.Data.Repositories
 {
-    public class ProductRepository : IProductRepository, IBrandRepo, ITypesRepo
+    public class ProductRepository : IProductRepository
     {
         private readonly ICatalogContext _catalogContext;
 
@@ -27,10 +27,6 @@ namespace Catalog.Infrastructure.Data.Repositories
             return deletedProduct.IsAcknowledged && deletedProduct.DeletedCount > 0;
         }
 
-        public async Task<IEnumerable<ProductBrand>> GetAllBrands()
-        {
-            return await _catalogContext.Brands.Find(b => true).ToListAsync();
-        }
 
         public async Task<Pagination<Product>> GetAllProducts(CatalogSpecifcationParam catalogSpecifcation)
         {
@@ -87,10 +83,7 @@ namespace Catalog.Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<ProductType>> GetAllTypes()
-        {
-            return await _catalogContext.Types.Find(p => true).ToListAsync();
-        }
+
 
         public async Task<Product> GetProduct(string id)
         {
