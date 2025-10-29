@@ -8,8 +8,19 @@ namespace Catalog.Infrastructure.Data
     {
         public static void SeedData(IMongoCollection<ProductType> typeCollection)
         {
-            bool checkTypes = typeCollection.Find(r => true).Any();
+            bool checkTypes = typeCollection.Find(b => true).Any();
+
+            // Current working directory (changes depending on environment)
+            string basePath = Directory.GetCurrentDirectory();
+
+            // Default path (Docker or root run)
             string path = Path.Combine("Data", "SeedData", "types.json");
+
+            if (!File.Exists(path))
+            {
+                path = Path.Combine(Directory.GetParent(basePath)!.FullName,
+                                    "Catalog.Infrastructure", "Data", "SeedData", "types.json");
+            }
 
             if (!checkTypes)
             {

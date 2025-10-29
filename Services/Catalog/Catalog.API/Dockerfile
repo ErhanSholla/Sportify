@@ -22,4 +22,10 @@ RUN dotnet publish "./Catalog.API.csproj" -c $BUILD_CONFIGURATION -o /app/publis
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY Services/Catalog/Catalog.Infrastructure/Data/SeedData ./Data/SeedData
+
+# Install Visual Studio remote debugger (vsdbg)
+RUN apt-get update && apt-get install -y unzip curl && \
+    curl -fsSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
+
 ENTRYPOINT ["dotnet", "Catalog.API.dll"]

@@ -1,4 +1,5 @@
-﻿using Catalog.Core.Entities;
+﻿using Catalog.Application.Sorting;
+using Catalog.Core.Entities;
 using Catalog.Core.Repository;
 using Catalog.Core.Specification;
 using MongoDB.Driver;
@@ -8,12 +9,14 @@ namespace Catalog.Infrastructure.Data.Repositories
     public class ProductRepository : IProductRepository
     {
         private readonly ICatalogContext _catalogContext;
+        private readonly ISortStrategyInteface _sortStrategyFactory;
 
-        public ProductRepository(ICatalogContext catalogContext)
+        public ProductRepository(ICatalogContext catalogContext, ISortStrategyInteface sortStrategyFactory)
         {
             ArgumentNullException.ThrowIfNull(catalogContext, nameof(catalogContext));
+            ArgumentNullException.ThrowIfNull(sortStrategyFactory, nameof(sortStrategyFactory));
             _catalogContext = catalogContext;
-
+            _sortStrategyFactory = sortStrategyFactory;
         }
         async Task<Product> IProductRepository.CreateProduct(Product product)
         {
@@ -51,6 +54,7 @@ namespace Catalog.Infrastructure.Data.Repositories
 
                 filter &= typeFilter;
             }
+
             var totalItems = await _catalogContext.Products.CountDocumentsAsync(filter);
             var data = await DataFilter(catalogSpecifcation, filter);
 
@@ -59,22 +63,11 @@ namespace Catalog.Infrastructure.Data.Repositories
 
         private async Task<IReadOnlyList<Product>> DataFilter(CatalogSpecifcationParam catalogSpecifcation, FilterDefinition<Product> filter)
         {
-            var sortDefinition = Builders<Product>.Sort.Ascending("Name");
-            if (!string.IsNullOrEmpty(catalogSpecifcation.Sort))
-            {
-                switch (catalogSpecifcation.Sort)
-                {
-                    case "priceAsc":
-                        sortDefinition = Builders<Product>.Sort.Ascending(p => p.Price);
-                        break;
-                    case "priceDesc":
-                        sortDefinition = Builders<Product>.Sort.Descending(p => p.Price);
-                        break;
-                    default:
-                        sortDefinition = Builders<Product>.Sort.Ascending(p => p.Name);
-                        break;
-                }
-            }
+            var sortBuilder = Builders<Product>.Sort;
+            var strategy = _sortStrategyFactory.GetSortStrategy(catalogSpecifcation.Sort ?? "name");
+
+            var sortDefinition = strategy.ApplySort(sortBuilder);
+
             return await _catalogContext.Products
                 .Find(filter)
                 .Sort(sortDefinition)
@@ -82,8 +75,6 @@ namespace Catalog.Infrastructure.Data.Repositories
                 .Limit(catalogSpecifcation.PageSize)
                 .ToListAsync();
         }
-
-
 
         public async Task<Product> GetProduct(string id)
         {
