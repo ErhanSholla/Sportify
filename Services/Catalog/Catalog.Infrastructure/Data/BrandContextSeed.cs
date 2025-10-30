@@ -10,15 +10,26 @@ namespace Catalog.Infrastructure.Data
     {
         public static void SeedData(IMongoCollection<ProductBrand> brandCollection)
         {
-            bool checkBrand = brandCollection.Find(p => true).Any();
+            bool checkBrands = brandCollection.Find(b => true).Any();
+
+            // Current working directory (changes depending on environment)
+            string basePath = Directory.GetCurrentDirectory();
+
+            // Default path (Docker or root run)
             string path = Path.Combine("Data", "SeedData", "brands.json");
 
-            if (!checkBrand)
+            if (!File.Exists(path))
             {
-                var brandData = File.ReadAllText(path);
-                var brands = JsonSerializer.Deserialize<List<ProductBrand>>(brandData);
+                path = Path.Combine(Directory.GetParent(basePath)!.FullName,
+                                    "Catalog.Infrastructure", "Data", "SeedData", "brands.json");
+            }
 
-                if (brands is not null)
+            if (!checkBrands)
+            {
+                var brandsData = File.ReadAllText(path);
+                var brands = JsonSerializer.Deserialize<List<ProductBrand>>(brandsData);
+
+                if (brands != null)
                 {
                     foreach (var brand in brands)
                     {
@@ -26,7 +37,6 @@ namespace Catalog.Infrastructure.Data
                     }
                 }
             }
-
         }
     }
 }

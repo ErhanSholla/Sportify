@@ -1,6 +1,7 @@
 
 using Catalog.Application.Mappers;
 using Catalog.Application.Queries;
+using Catalog.Application.Sorting;
 using Catalog.Core.Repository;
 using Catalog.Infrastructure.Data;
 using Catalog.Infrastructure.Data.Repositories;
@@ -41,7 +42,12 @@ namespace Catalog.API
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ITypesRepo, TypRepository>();
             builder.Services.AddScoped<IBrandRepo, BrandRepository>();
-
+            // sorting strategis
+            builder.Services.AddScoped<ISortStrategy, PriceAscSortStrategy>();
+            builder.Services.AddScoped<ISortStrategy, PriceSortStrategy>();
+            builder.Services.AddScoped<ISortStrategy, NameSortStrategy>();
+            // sorting factory
+            builder.Services.AddScoped<ISortStrategyInteface, SortStrategyFactory>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
