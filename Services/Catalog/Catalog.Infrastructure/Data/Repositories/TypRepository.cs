@@ -1,4 +1,5 @@
-﻿using Catalog.Core.Entities;
+﻿using AutoMapper;
+using Catalog.Core.Entities;
 using Catalog.Core.Repository;
 using MongoDB.Driver;
 
@@ -7,14 +8,20 @@ public class TypRepository : ITypesRepo
 {
     private readonly ICatalogContext _catalogContext;
 
-    public TypRepository(ICatalogContext catalogContext)
+    public TypRepository(ICatalogContext catalogContext, IMapper mapper)
     {
         ArgumentNullException.ThrowIfNull(catalogContext, nameof(catalogContext));
+        ArgumentNullException.ThrowIfNull(mapper, nameof(mapper));
         _catalogContext = catalogContext;
+        _mapper = mapper;
     }
+
+    public IMapper _mapper { get; }
+
     public async Task<IEnumerable<ProductType>> GetAllTypes()
     {
-        return await _catalogContext.Types.Find(p => true).ToListAsync();
+        var document = await _catalogContext.Types.Find(p => true).ToListAsync();
+        return _mapper.Map<IEnumerable<ProductType>>(document);
     }
 }
 
