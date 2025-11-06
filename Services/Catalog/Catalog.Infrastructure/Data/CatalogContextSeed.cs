@@ -6,34 +6,35 @@ using System.Text.Json;
 namespace Catalog.Infrastructure.Data;
 public static class CatalogContextSeed
 {
-    public static void SeedData(IMongoCollection<ProductDocument> productCollection)
+    public static async Task SeedDataAsync(IMongoCollection<ProductDocument> productCollection)
     {
-        bool checkProducts = productCollection.Find(b => true).Any();
+        var hasProducts = await productCollection
+            .Find(p => true)
+            .AnyAsync();
 
-        // Current working directory (changes depending on environment)
-        string basePath = Directory.GetCurrentDirectory();
-
-        // Default path (Docker or root run)
-        string path = Path.Combine("Data", "SeedData", "products.json");
-
-        if (!File.Exists(path))
+        if (hasProducts)
         {
-            path = Path.Combine(Directory.GetParent(basePath)!.FullName,
-                                "Catalog.Infrastructure", "Data", "SeedData", "products.json");
+            return;
         }
 
-        if (!checkProducts)
-        {
-            var productsData = File.ReadAllText(path);
-            var products = JsonSerializer.Deserialize<List<ProductDocument>>(productsData);
+        // Use application base directory (safe in Docker)
+        var seedPath = Path.Combine(AppContext.BaseDirectory, "Data", "SeedData", "products.json");
 
-            if (products != null)
-            {
-                foreach (var product in products)
-                {
-                    productCollection.InsertOneAsync(product);
-                }
-            }
+        if (!File.Exists(seedPath))
+        {
+            Console.WriteLine($"Seed file not found: {seedPath}");
+            return;
+        }
+
+        Console.WriteLine($"Seeding products from: {seedPath}");
+        var productsData = await File.ReadAllTextAsync(seedPath);
+        var products = JsonSerializer.Deserialize<List<ProductDocument>>(productsData);
+
+        if (products != null && products.Count > 0)
+        {
+            await productCollection.DeleteManyAsync(Builders<ProductDocument>.Filter.Empty); // Clear before reseed
+            await productCollection.InsertManyAsync(products);
+            Console.WriteLine($"Inserted {products.Count} product records.");
         }
     }
 }

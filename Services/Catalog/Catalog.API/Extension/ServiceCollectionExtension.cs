@@ -1,10 +1,10 @@
 ﻿using Catalog.Application.Mappers;
 using Catalog.Application.Queries;
-using Catalog.Application.Sorting;
 using Catalog.Core.Repository;
 using Catalog.Infrastructure.Data;
 using Catalog.Infrastructure.Data.Repositories;
 using Catalog.Infrastructure.Documents;
+using Catalog.Infrastructure.Mappers;
 using Catalog.Infrastructure.Sorting;
 
 namespace Catalog.API.Extension
@@ -14,7 +14,7 @@ namespace Catalog.API.Extension
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             // Auto Mapper
-            services.AddAutoMapper(typeof(ProductMappingProfile).Assembly);
+            services.AddAutoMapper(typeof(ProductMappingProfile).Assembly, typeof(ProductDocumentProfile).Assembly);
 
             // Mediatr
             services.AddMediatR(configuration =>
@@ -33,7 +33,7 @@ namespace Catalog.API.Extension
             services.AddScoped<IMongoSortStrategy<ProductDocument>, MongoNameSortStrategy>();
             services.AddScoped<IMongoSortStrategy<ProductDocument>, MongoPriceAscSortStrategy>();
             services.AddScoped<IMongoSortStrategy<ProductDocument>, MongoPriceDescSortStrategy>();
-            services.AddScoped<IMongoSortStrategy<ProductDocument>>();
+            services.AddScoped<MongoSortStrategyFactory<ProductDocument>>();
 
 
             return services;

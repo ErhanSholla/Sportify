@@ -8,7 +8,7 @@ public class TypRepository : ITypesRepo
 {
     private readonly ICatalogContext _catalogContext;
 
-    public TypRepository(ICatalogContext catalogContext, Mapper mapper)
+    public TypRepository(ICatalogContext catalogContext, IMapper mapper)
     {
         ArgumentNullException.ThrowIfNull(catalogContext, nameof(catalogContext));
         ArgumentNullException.ThrowIfNull(mapper, nameof(mapper));
@@ -16,7 +16,7 @@ public class TypRepository : ITypesRepo
         _mapper = mapper;
     }
 
-    public Mapper _mapper { get; }
+    public IMapper _mapper { get; }
 
     public async Task<IEnumerable<ProductType>> GetAllTypes()
     {

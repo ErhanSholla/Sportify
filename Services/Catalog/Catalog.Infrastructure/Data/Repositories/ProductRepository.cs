@@ -13,10 +13,10 @@ namespace Catalog.Infrastructure.Data.Repositories
     {
         private readonly ICatalogContext _catalogContext;
         private readonly MongoSortStrategyFactory<ProductDocument> _sortStrategyFactory;
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
         private static readonly Collation _caseInsensitiveCollation = new Collation("en", strength: CollationStrength.Secondary);
 
-        public ProductRepository(ICatalogContext catalogContext, MongoSortStrategyFactory<ProductDocument> sortStrategyFactory, Mapper mapper)
+        public ProductRepository(ICatalogContext catalogContext, MongoSortStrategyFactory<ProductDocument> sortStrategyFactory, IMapper mapper)
         {
             ArgumentNullException.ThrowIfNull(catalogContext, nameof(catalogContext));
             ArgumentNullException.ThrowIfNull(sortStrategyFactory, nameof(sortStrategyFactory));

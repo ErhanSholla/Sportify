@@ -13,10 +13,10 @@ namespace Catalog.Infrastructure.Mappers
     {
         public ProductDocumentProfile()
         {
-            // Entity -> Domain Vice Versa
-            CreateMap<ProductBrand, ProductBrandDocument>().ReverseMap();
-            CreateMap<Product, ProductDocument>().ReverseMap();
-            CreateMap<ProductType, ProductTypeDocument>().ReverseMap();
+            // Document -> Domain and Vice versa
+            CreateMap<ProductDocument, Product>().ReverseMap();
+            CreateMap<ProductBrandDocument, ProductBrand>().ReverseMap();
+            CreateMap<ProductTypeDocument, ProductType>().ReverseMap();
         }
     }
 }
