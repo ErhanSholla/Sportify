@@ -1,6 +1,6 @@
 ﻿
 
-using Catalog.Core.Entities;
+using Catalog.Infrastructure.Documents;
 using MongoDB.Driver;
 using System.Text.Json;
 
@@ -8,7 +8,7 @@ namespace Catalog.Infrastructure.Data
 {
     public static class BrandContextSeed
     {
-        public static void SeedData(IMongoCollection<ProductBrand> brandCollection)
+        public static void SeedData(IMongoCollection<ProductBrandDocument> brandCollection)
         {
             bool checkBrands = brandCollection.Find(b => true).Any();
 
@@ -27,7 +27,7 @@ namespace Catalog.Infrastructure.Data
             if (!checkBrands)
             {
                 var brandsData = File.ReadAllText(path);
-                var brands = JsonSerializer.Deserialize<List<ProductBrand>>(brandsData);
+                var brands = JsonSerializer.Deserialize<List<ProductBrandDocument>>(brandsData);
 
                 if (brands != null)
                 {

@@ -1,11 +1,12 @@
 ﻿using Catalog.Core.Entities;
+using Catalog.Infrastructure.Documents;
 using MongoDB.Driver;
 using System.Text.Json;
 
 namespace Catalog.Infrastructure.Data;
 public static class CatalogContextSeed
 {
-    public static void SeedData(IMongoCollection<Product> productCollection)
+    public static void SeedData(IMongoCollection<ProductDocument> productCollection)
     {
         bool checkProducts = productCollection.Find(b => true).Any();
 
@@ -24,7 +25,7 @@ public static class CatalogContextSeed
         if (!checkProducts)
         {
             var productsData = File.ReadAllText(path);
-            var products = JsonSerializer.Deserialize<List<Product>>(productsData);
+            var products = JsonSerializer.Deserialize<List<ProductDocument>>(productsData);
 
             if (products != null)
             {

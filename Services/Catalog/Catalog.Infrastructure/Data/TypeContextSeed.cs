@@ -1,12 +1,13 @@
 ﻿using Catalog.Core.Entities;
-using MongoDB.Driver;
 using System.Text.Json;
+using MongoDB.Driver;
+using Catalog.Infrastructure.Documents;
 
 namespace Catalog.Infrastructure.Data
 {
     public static class TypeContextSeed
     {
-        public static void SeedData(IMongoCollection<ProductType> typeCollection)
+        public static void SeedData(IMongoCollection<ProductTypeDocument> typeCollection)
         {
             bool checkTypes = typeCollection.Find(b => true).Any();
 
@@ -25,7 +26,7 @@ namespace Catalog.Infrastructure.Data
             if (!checkTypes)
             {
                 var typesData = File.ReadAllText(path);
-                var types = JsonSerializer.Deserialize<List<ProductType>>(typesData);
+                var types = JsonSerializer.Deserialize<List<ProductTypeDocument>>(typesData);
 
                 if (types != null)
                 {

@@ -4,6 +4,8 @@ using Catalog.Application.Sorting;
 using Catalog.Core.Repository;
 using Catalog.Infrastructure.Data;
 using Catalog.Infrastructure.Data.Repositories;
+using Catalog.Infrastructure.Documents;
+using Catalog.Infrastructure.Sorting;
 
 namespace Catalog.API.Extension
 {
@@ -28,10 +30,11 @@ namespace Catalog.API.Extension
 
 
             // Sort Strategies
-            services.AddScoped<ISortStrategy, PriceAscSortStrategy>();
-            services.AddScoped<ISortStrategy, PriceSortStrategy>();
-            services.AddScoped<ISortStrategy, NameSortStrategy>();
-            services.AddScoped<ISortStrategyInteface, SortStrategyFactory>();
+            services.AddScoped<IMongoSortStrategy<ProductDocument>, MongoNameSortStrategy>();
+            services.AddScoped<IMongoSortStrategy<ProductDocument>, MongoPriceAscSortStrategy>();
+            services.AddScoped<IMongoSortStrategy<ProductDocument>, MongoPriceDescSortStrategy>();
+            services.AddScoped<IMongoSortStrategy<ProductDocument>>();
+
 
             return services;
         }

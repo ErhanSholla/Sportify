@@ -1,11 +1,5 @@
 
 using Catalog.API.Extension;
-using Catalog.Application.Mappers;
-using Catalog.Application.Queries;
-using Catalog.Application.Sorting;
-using Catalog.Core.Repository;
-using Catalog.Infrastructure.Data;
-using Catalog.Infrastructure.Data.Repositories;
 
 namespace Catalog.API
 {
@@ -22,6 +16,8 @@ namespace Catalog.API
             builder.Services.AddApiVersioningConfig().AddSwaggerConfig().AddApplicationServices();
 
             var app = builder.Build();
+
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

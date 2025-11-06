@@ -1,7 +1,9 @@
-﻿using Catalog.Application.Sorting;
+﻿using AutoMapper;
 using Catalog.Core.Entities;
 using Catalog.Core.Repository;
 using Catalog.Core.Specification;
+using Catalog.Infrastructure.Documents;
+using Catalog.Infrastructure.Sorting;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -10,20 +12,26 @@ namespace Catalog.Infrastructure.Data.Repositories
     public class ProductRepository : IProductRepository
     {
         private readonly ICatalogContext _catalogContext;
-        private readonly ISortStrategyInteface _sortStrategyFactory;
+        private readonly MongoSortStrategyFactory<ProductDocument> _sortStrategyFactory;
+        private readonly Mapper _mapper;
         private static readonly Collation _caseInsensitiveCollation = new Collation("en", strength: CollationStrength.Secondary);
 
-        public ProductRepository(ICatalogContext catalogContext, ISortStrategyInteface sortStrategyFactory)
+        public ProductRepository(ICatalogContext catalogContext, MongoSortStrategyFactory<ProductDocument> sortStrategyFactory, Mapper mapper)
         {
             ArgumentNullException.ThrowIfNull(catalogContext, nameof(catalogContext));
             ArgumentNullException.ThrowIfNull(sortStrategyFactory, nameof(sortStrategyFactory));
+            ArgumentNullException.ThrowIfNull(mapper, nameof(mapper));
+
             _catalogContext = catalogContext;
             _sortStrategyFactory = sortStrategyFactory;
+            _mapper = mapper;
         }
         async Task<Product> IProductRepository.CreateProduct(Product product)
         {
-            await _catalogContext.Products.InsertOneAsync(product);
-            return product;
+            var document = _mapper.Map<ProductDocument>(product);
+            await _catalogContext.Products.InsertOneAsync(document);
+
+            return _mapper.Map<Product>(document);
         }
 
         async Task<bool> IProductRepository.DeleteProduct(string id)
@@ -35,7 +43,7 @@ namespace Catalog.Infrastructure.Data.Repositories
 
         public async Task<Pagination<Product>> GetAllProducts(CatalogSpecifcationParam catalogSpecifcation)
         {
-            var builder = Builders<Product>.Filter;
+            var builder = Builders<ProductDocument>.Filter;
             var filter = builder.Empty;
 
             if (!string.IsNullOrEmpty(catalogSpecifcation.Search))
@@ -60,14 +68,15 @@ namespace Catalog.Infrastructure.Data.Repositories
 
             var totalItems = await _catalogContext.Products.CountDocumentsAsync(filter, countOptions);
             var data = await DataFilter(catalogSpecifcation, filter);
+            var mappedData = _mapper.Map<IReadOnlyList<Product>>(data);
 
-            return new Pagination<Product>(catalogSpecifcation.PageIndex, catalogSpecifcation.PageSize, (int)totalItems, data);
+            return new Pagination<Product>(catalogSpecifcation.PageIndex, catalogSpecifcation.PageSize, (int)totalItems, mappedData);
         }
 
-        private async Task<IReadOnlyList<Product>> DataFilter(CatalogSpecifcationParam catalogSpecifcation, FilterDefinition<Product> filter)
+        private async Task<IReadOnlyList<ProductDocument>> DataFilter(CatalogSpecifcationParam catalogSpecifcation, FilterDefinition<ProductDocument> filter)
         {
-            var sortBuilder = Builders<Product>.Sort;
-            var strategy = _sortStrategyFactory.GetSortStrategy(catalogSpecifcation.Sort ?? "name");
+            var sortBuilder = Builders<ProductDocument>.Sort;
+            var strategy = _sortStrategyFactory.GetStrategy(catalogSpecifcation.Sort ?? "name");
 
             var sortDefinition = strategy.ApplySort(sortBuilder);
 
@@ -87,35 +96,43 @@ namespace Catalog.Infrastructure.Data.Repositories
 
         public async Task<Product> GetProduct(string id)
         {
-            return await _catalogContext.Products.Find(p => p.Id.Equals(id)).FirstOrDefaultAsync();
+            var document = await _catalogContext.Products.Find(p => p.Id.Equals(id)).FirstOrDefaultAsync();
+
+            return _mapper.Map<Product>(document);
         }
 
         public async Task<IEnumerable<Product>> GetProductsByBrandName(string brandName)
         {
-            var fitler = Builders<Product>.Filter.Eq(p => p.Brand.Name, brandName);
-            var options = new FindOptions<Product>
+            var fitler = Builders<ProductDocument>.Filter.Eq(p => p.Brand.Name, brandName);
+            var options = new FindOptions<ProductDocument>
             {
                 Collation = _caseInsensitiveCollation,
             };
 
             using var cursor = await _catalogContext.Products.FindAsync(fitler, options);
-            return await cursor.ToListAsync();
+            var documents = await cursor.ToListAsync();
+
+            return _mapper.Map<IEnumerable<Product>>(documents);
         }
 
         public async Task<IEnumerable<Product>> GetProductsByName(string name)
         {
-            var fitler = Builders<Product>.Filter.Eq(p => p.Name, name);
-            var options = new FindOptions<Product>
+            var fitler = Builders<ProductDocument>.Filter.Eq(p => p.Name, name);
+            var options = new FindOptions<ProductDocument>
             {
                 Collation = _caseInsensitiveCollation,
             };
             using var cursor = await _catalogContext.Products.FindAsync(fitler, options);
-            return await cursor.ToListAsync();
+            var documents = await cursor.ToListAsync();
+
+            return _mapper.Map<IEnumerable<Product>>(documents);
         }
 
         public async Task<bool> UpdateProduct(Product product)
         {
-            var updatedProduct = await _catalogContext.Products.ReplaceOneAsync(p => p.Id.Equals(product.Id), product);
+            var document = _mapper.Map<ProductDocument>(product);
+            var updatedProduct = await _catalogContext.Products.ReplaceOneAsync(p => p.Id.Equals(product.Id), document);
+
             return updatedProduct.IsAcknowledged && updatedProduct.ModifiedCount > 0;
         }
     }
