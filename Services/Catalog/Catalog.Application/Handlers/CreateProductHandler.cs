@@ -23,6 +23,7 @@ namespace Catalog.Application.Handlers
                 throw new ApplicationException("This is an issue with mapping while creating");
             }
             var newProduct = await _productRepository.CreateProduct(productEntity);
+
             return ProductMapper.Mapper.Map<ProductResponse>(newProduct);
         }
     }

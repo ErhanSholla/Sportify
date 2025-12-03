@@ -1,5 +1,4 @@
-﻿using Catalog.Core.Entities;
-using Catalog.Infrastructure.Documents;
+﻿using Catalog.Infrastructure.Documents;
 using MongoDB.Driver;
 using System.Text.Json;
 

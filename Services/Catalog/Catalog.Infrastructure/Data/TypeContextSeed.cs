@@ -1,7 +1,6 @@
-﻿using Catalog.Core.Entities;
-using System.Text.Json;
+﻿using Catalog.Infrastructure.Documents;
 using MongoDB.Driver;
-using Catalog.Infrastructure.Documents;
+using System.Text.Json;
 
 namespace Catalog.Infrastructure.Data
 {
