@@ -1,7 +1,6 @@
 
 using Catalog.API.Extension;
 using Catalog.Infrastructure.Data;
-using System.Threading.Tasks;
 
 namespace Catalog.API
 {
