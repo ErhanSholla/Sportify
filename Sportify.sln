@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basket.Core", "Services\Bas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basket.Infrastructure", "Services\Basket\Basket.Infrastructure\Basket.Infrastructure.csproj", "{1161DF12-5E6C-4DB4-83CA-5EC4146CED6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sportify.AppHost", "Sportify.AppHost\Sportify.AppHost.csproj", "{98576232-CA08-4B10-9C21-3B8B95B2E3A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sportify.ServiceDefaults", "Sportify.ServiceDefaults\Sportify.ServiceDefaults.csproj", "{77FDAEC5-4A21-B198-EC0E-FEEC2CF3F4B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +73,14 @@ Global
 		{1161DF12-5E6C-4DB4-83CA-5EC4146CED6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1161DF12-5E6C-4DB4-83CA-5EC4146CED6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1161DF12-5E6C-4DB4-83CA-5EC4146CED6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98576232-CA08-4B10-9C21-3B8B95B2E3A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98576232-CA08-4B10-9C21-3B8B95B2E3A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98576232-CA08-4B10-9C21-3B8B95B2E3A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98576232-CA08-4B10-9C21-3B8B95B2E3A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77FDAEC5-4A21-B198-EC0E-FEEC2CF3F4B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77FDAEC5-4A21-B198-EC0E-FEEC2CF3F4B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77FDAEC5-4A21-B198-EC0E-FEEC2CF3F4B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77FDAEC5-4A21-B198-EC0E-FEEC2CF3F4B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
